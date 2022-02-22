@@ -1,25 +1,79 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import axios from 'axios';
+import Header from './components/Layout/Header';
+import ShowVenues from './components/ShowVenues'
+import SearchVenue from './components/SearchVenue';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends Component {
+  constructor(props){
+    super(props);
+    this.state={
+      list: [],
+      topic: '',
+      latlong:'',
+    }
+  }
+
+  componentDidMount() {
+    this.getLocation();
+  }
+
+  getLocation = () => {
+    navigator.geolocation.getCurrentPosition(res => {
+      // console.log(res.coords);
+      this.setState({latlong: `${res.coords.latitude},${res.coords.longitude}`})
+    }) 
+  }
+
+  onChange=(event)=>{
+    this.setState({
+      // name: name of input
+      [event.target.name]:event.target.value
+    })
+  }
+
+  onClick = (e) =>{
+    e.preventDefault();
+    
+    const endpoint= 'https://api.foursquare.com/v3/places/search?';
+    const apiKey = 'fsq3dj6D9owex8oECLbAW58vnBay0gjEO/KEmK+3RVKAi4g=';
+    const params = {
+      ll: this.state.latlong,
+      radius: 100000,
+      query: this.state.topic,
+    };
+    // console.log(params.ll);
+    const url = endpoint + new URLSearchParams(params);
+
+    const options = {
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json',
+        Authorization: apiKey
+      }
+    };
+    
+    this.state.topic === '' 
+    ? alert ('Please fill something')
+    : axios.request(options)
+      .then((res)=>{
+        console.log(res.data.results);
+        this.setState({list: res.data.results})
+       })
+      .catch((err)=>{console.log(err)})
+    
+
+    this.setState({topic: ''})
+  }
+  
+  render() {
+    return (
+      <div className="App">
+         <Header />
+         <SearchVenue onChange={this.onChange} onClick={(e) => this.onClick(e)}/>
+         <ShowVenues list={this.state.list} topic={this.state.topic} />
+      </div>
+    )
+  }
 }
-
-export default App;
