@@ -3,7 +3,7 @@ import '../App.css'
 
 function SearchVenue(props) {
   return (
-
+    
   <div style={{margin:"20px", width:"700px" }}>
     <form>
       <div className="mb-3">

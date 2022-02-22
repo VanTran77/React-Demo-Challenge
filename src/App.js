@@ -58,21 +58,22 @@ export default class App extends Component {
     ? alert ('Please fill something')
     : axios.request(options)
       .then((res)=>{
-        console.log(res.data.results);
-        this.setState({list: res.data.results})
+        // console.log(res.data.results);
+        this.setState({
+          list: res.data.results,
+          topic: "",
+        })
        })
       .catch((err)=>{console.log(err)})
-    
-
-    this.setState({topic: ''})
+  
   }
   
   render() {
     return (
       <div className="App">
          <Header />
-         <SearchVenue onChange={this.onChange} onClick={(e) => this.onClick(e)}/>
-         <ShowVenues list={this.state.list} topic={this.state.topic} />
+         <SearchVenue onChange={this.onChange} onClick={(e) => this.onClick(e)} topic={this.state.topic}/>
+         <ShowVenues list={this.state.list} />
       </div>
     )
   }
